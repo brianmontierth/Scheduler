@@ -83,7 +83,6 @@ public class TermDetail extends AppCompatActivity {
                 startActivity(new Intent(TermDetail.this, CourseDetail.class));
             }
         });
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         EventBus.getDefault().register(this);
     }
 

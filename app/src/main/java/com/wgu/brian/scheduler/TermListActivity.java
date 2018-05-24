@@ -64,8 +64,6 @@ public class TermListActivity extends AppCompatActivity {
             }
         });
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
 
     }
 

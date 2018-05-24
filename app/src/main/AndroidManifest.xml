@@ -21,27 +21,17 @@
             android:label="@string/title_activity_term_list"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.wgu.brian.scheduler.MainActivity" />
         </activity>
         <activity
             android:name=".CourseListActivity"
             android:label="@string/title_activity_course_list"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.wgu.brian.scheduler.MainActivity" />
         </activity>
         <activity
             android:name=".TermDetail"
             android:label="@string/title_activity_term_detail"
-            android:parentActivityName=".TermListActivity"
-            >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.wgu.brian.scheduler.TermListActivity" />
+            android:parentActivityName=".TermListActivity">
         </activity>
 
 
@@ -50,9 +40,6 @@
             android:label="@string/title_activity_course_detail"
             android:parentActivityName=".TermDetail"
             android:theme="@style/AppTheme.NoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.wgu.brian.scheduler.TermDetail" />
         </activity>
     </application>
 

@@ -48,20 +48,6 @@
                 android:inputType="date" />
         </android.support.design.widget.TextInputLayout>
 
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/courses"
-            android:textSize="18sp"
-            android:textStyle="bold" />
-
-        <android.support.v7.widget.RecyclerView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-        </android.support.v7.widget.RecyclerView>
-
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
