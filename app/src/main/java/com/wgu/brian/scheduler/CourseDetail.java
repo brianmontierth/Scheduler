@@ -14,7 +14,6 @@ public class CourseDetail extends AppCompatActivity {
     TextView courseStart;
     TextView courseEnd;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

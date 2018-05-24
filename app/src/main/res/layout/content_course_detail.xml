@@ -55,11 +55,12 @@
             android:textSize="18sp"
             android:textStyle="bold" />
 
-        <!--<android.support.v7.widget.RecyclerView
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/assessment_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-        </android.support.v7.widget.RecyclerView>-->
+        </android.support.v7.widget.RecyclerView>
 
         <TextView
             android:layout_width="match_parent"
@@ -68,11 +69,11 @@
             android:textSize="18sp"
             android:textStyle="bold" />
 
-        <!--<android.support.v7.widget.RecyclerView
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/mentor_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-
-        </android.support.v7.widget.RecyclerView>-->
+        </android.support.v7.widget.RecyclerView>
 
 
     </LinearLayout>

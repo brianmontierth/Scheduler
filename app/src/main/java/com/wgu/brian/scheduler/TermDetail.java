@@ -23,13 +23,14 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 public class TermDetail extends AppCompatActivity {
 
-    private static final String TAG = "TERM_DETAIL_ACTIVITY_TAG";
+    private static final String TAG = "TermDetail";
     private List<Course> courses;
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
@@ -42,6 +43,8 @@ public class TermDetail extends AppCompatActivity {
     private TextView termStart;
     private TextView termEnd;
 
+    private boolean newTerm = true;
+
     private Executor executor = Executors.newCachedThreadPool();
 
     @Override
@@ -51,11 +54,11 @@ public class TermDetail extends AppCompatActivity {
 
         try {
             position = getIntent().getExtras().getInt(TermAdapter.POSITION, -1);
-
         } catch (Exception e) {
-            System.out.println("Get Position failed!");
             e.printStackTrace();
         }
+
+        courses = new ArrayList<>();
 
         termName = findViewById(R.id.termDetailName);
         termStart = findViewById(R.id.termDetailStart);
@@ -63,18 +66,21 @@ public class TermDetail extends AppCompatActivity {
 
         db = AppDatabase.getInstance(this);
 
-
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                if (position != -1) {
-                    Term term = db.termDao().findById(TermDetail.position + 1);
-                    EventBus.getDefault().post(new TermEvent(term));
-                    courses = db.courseDao().findAllByTermId(term.getId());
-                    EventBus.getDefault().post(new CoursesEvent(courses));
+        if (position != -1) {
+            newTerm = false;
+            executor.execute(new Runnable() {
+                @Override
+                public void run() {
+                        Term term = db.termDao().findById(TermDetail.position + 1);
+                        EventBus.getDefault().post(new TermEvent(term));
+                        List<Course> tempCourses = db.courseDao().findAllByTermId(term.getId());
+                        EventBus.getDefault().post(new CoursesEvent(tempCourses));
                 }
-            }
-        });
+            });
+        }
+        else {
+            bindCourseRecycler();
+        }
 
         fab = findViewById(R.id.term_detail_fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -88,9 +94,13 @@ public class TermDetail extends AppCompatActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void CoursesEventHandler(CoursesEvent event) {
-        Log.d(TAG, "CoursesEventHandler: Event triggered!");
+        Log.d(TAG, "CoursesEventHandler: Course Event triggered!");
 
         courses = event.getCourseList();
+        bindCourseRecycler();
+    }
+
+    private void bindCourseRecycler() {
         recyclerView = findViewById(R.id.course_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new CourseAdapter(courses);
@@ -99,11 +109,8 @@ public class TermDetail extends AppCompatActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void TermEventHandler(TermEvent event){
-        Log.d(TAG, "TermEventHandler: Caught event");
+        Log.d(TAG, "TermEventHandler: Caught Term event");
         bindActivity(event);
-
-        Toast.makeText(getApplicationContext(),"Need to populate term detail page. " + position, Toast.LENGTH_LONG).show();
-        // TODO: 5/21/2018 populate term detail page.
     }
 
     private void bindActivity(TermEvent event) {
@@ -118,24 +125,22 @@ public class TermDetail extends AppCompatActivity {
 
         // TODO: 5/21/2018 Term Detail Validation
 
+        selectedTerm.setName(termName.getText().toString());
+        selectedTerm.setStart_date(termStart.getText().toString());
+        selectedTerm.setEnd_date(termEnd.getText().toString());
         executor.execute(new Runnable() {
             @Override
             public void run() {
 
-                selectedTerm.setName(termName.getText().toString());
-                selectedTerm.setStart_date(termStart.getText().toString());
-                selectedTerm.setEnd_date(termEnd.getText().toString());
-
                 db.termDao().insert(selectedTerm);
             }
         });
-
+        Toast.makeText(getApplicationContext(), selectedTerm.getName() + " saved.",Toast.LENGTH_LONG).show();
         super.onBackPressed();
     }
 
     @Override
     protected void onDestroy() {
-        AppDatabase.destroyInstance();
         EventBus.getDefault().unregister(this);
         super.onDestroy();
     }

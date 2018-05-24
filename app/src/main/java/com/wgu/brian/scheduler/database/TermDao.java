@@ -11,7 +11,7 @@ import com.wgu.brian.scheduler.database.entities.Term;
 import java.util.List;
 @Dao
 public interface TermDao {
-    @Query("SELECT * FROM Term ORDER BY name")
+    @Query("SELECT * FROM Term ORDER BY id")
     List<Term> getAllTerms();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

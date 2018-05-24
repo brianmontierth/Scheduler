@@ -24,8 +24,8 @@ import java.util.concurrent.Executors;
 
 public class TermListActivity extends AppCompatActivity {
 
-    private static final String TAG = "TERM_LIST_ACTIVITY_TAG";
-    List<Term> terms;
+    private static final String TAG = "TermListActivity";
+    static List<Term> terms;
     FloatingActionButton fab;
     RecyclerView recyclerView;
     RecyclerView.Adapter adapter;
@@ -84,5 +84,11 @@ public class TermListActivity extends AppCompatActivity {
         AppDatabase.destroyInstance();
         EventBus.getDefault().unregister(this);
         super.onDestroy();
+    }
+
+    @Override
+    protected void onRestart() {
+        recreate();
+        super.onRestart();
     }
 }
