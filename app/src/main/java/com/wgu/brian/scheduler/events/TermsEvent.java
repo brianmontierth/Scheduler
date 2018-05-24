@@ -6,18 +6,18 @@ import java.util.List;
 
 public class TermsEvent {
 
-    private List<Term> termList;
+    private List<Term> terms;
 
-    public TermsEvent(List<Term> termList) {
-        this.termList = termList;
+    public TermsEvent(List<Term> terms) {
+        this.terms = terms;
     }
 
-    public List<Term> getTermList() {
-        return termList;
+    public List<Term> getTerms() {
+        return terms;
     }
 
-    public void setTermList(List<Term> termList) {
-        this.termList = termList;
+    public void setTerms(List<Term> terms) {
+        this.terms = terms;
     }
 }
 

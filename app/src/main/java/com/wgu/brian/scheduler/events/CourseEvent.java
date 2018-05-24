@@ -13,7 +13,7 @@ public class CourseEvent {
         return course;
     }
 
-    public void setCourseList(Course course) {
+    public void setCourse(Course course) {
         this.course = course;
     }
 }

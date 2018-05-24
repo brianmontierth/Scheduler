@@ -1,9 +1,7 @@
 package com.wgu.brian.scheduler;
 
 import android.content.Intent;
-import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -91,7 +89,7 @@ public class TermDetail extends AppCompatActivity {
     public void CoursesEventHandler(CoursesEvent event) {
         Log.d(TAG, "CoursesEventHandler: Event triggered!");
 
-        courses = event.getCourseList();
+        courses = event.getCourses();
         recyclerView = findViewById(R.id.course_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new CourseAdapter(courses);

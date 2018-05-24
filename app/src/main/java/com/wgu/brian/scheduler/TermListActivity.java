@@ -74,7 +74,7 @@ public class TermListActivity extends AppCompatActivity {
 
         Log.d(TAG, "TermsEventHandler: Event triggered!");
 
-        terms = event.getTermList();
+        terms = event.getTerms();
         recyclerView = findViewById(R.id.term_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new TermAdapter(terms);
