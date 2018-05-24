@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Scheduler</string>
+    <string name="title_activity_term_list">Terms</string>
+    <string name="title_activity_course_list">Courses</string>
+    <string name="start">Start:</string>
+    <string name="end">End:</string>
+    <string name="exampleTermName">Term 1</string>
+    <string name="name">Name:</string>
+    <string name="courses">Courses:</string>
+    <string name="assessments">Assessments:</string>
+    <string name="mentors">Mentors:</string>
+    <string name="exampleCourse">Course 1</string>
+    <string name="title_activity_course_detail">Course Detail</string>
+    <string name="title_activity_term_detail">Term Detail</string>
+</resources>
