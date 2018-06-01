@@ -6,17 +6,17 @@ import java.util.List;
 
 public class CoursesEvent {
 
-    private List<Course> courseList;
+    private List<Course> courses;
 
     public CoursesEvent(List<Course> courses) {
-        this.courseList = courses;
+        this.courses = courses;
     }
 
-    public List<Course> getCourseList() {
-        return courseList;
+    public List<Course> getCourses() {
+        return courses;
     }
 
-    public void setCourseList(List<Course> courseList) {
-        this.courseList = courseList;
+    public void setCourses(List<Course> courses) {
+        this.courses = courses;
     }
 }
