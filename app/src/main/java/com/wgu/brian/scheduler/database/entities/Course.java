@@ -35,6 +35,10 @@ public class Course {
         this.status = status;
     }
 
+    public Course() {
+
+    }
+
     public int getId() {
         return id;
     }

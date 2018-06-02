@@ -38,7 +38,7 @@ class TermAdapter extends RecyclerView.Adapter<TermAdapter.ViewHolder> {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(holder.view.getContext(),TermDetail.class);
-                intent.putExtra(POSITION, holder.getAdapterPosition());
+                intent.putExtra(POSITION, terms.get(holder.getAdapterPosition()).getId());
                 holder.view.getContext().startActivity(intent);
 
             }

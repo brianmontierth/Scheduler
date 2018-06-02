@@ -1,14 +1,14 @@
 package com.wgu.brian.scheduler;
 
 import android.content.Intent;
-import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,13 +37,16 @@ public class TermDetail extends AppCompatActivity {
     private FloatingActionButton fab;
     private AppDatabase db;
     private Term selectedTerm = new Term();
-    public static int position;
+    public static int id;
 
     private TextView termName;
     private TextView termStart;
     private TextView termEnd;
 
     private boolean newTerm = true;
+    private boolean formEnabled = true;
+
+    private Menu menu;
 
     private Executor executor = Executors.newCachedThreadPool();
 
@@ -53,7 +56,7 @@ public class TermDetail extends AppCompatActivity {
         setContentView(R.layout.activity_term_detail);
 
         try {
-            position = getIntent().getExtras().getInt(TermAdapter.POSITION, -1);
+            id = getIntent().getExtras().getInt(TermAdapter.POSITION, -1);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -66,12 +69,12 @@ public class TermDetail extends AppCompatActivity {
 
         db = AppDatabase.getInstance(this);
 
-        if (position != -1) {
+        if (id != -1) {
             newTerm = false;
             executor.execute(new Runnable() {
                 @Override
                 public void run() {
-                        Term term = db.termDao().findById(TermDetail.position + 1);
+                        Term term = db.termDao().findById(TermDetail.id);
                         EventBus.getDefault().post(new TermEvent(term));
                         List<Course> tempCourses = db.courseDao().findAllByTermId(term.getId());
                         EventBus.getDefault().post(new CoursesEvent(tempCourses));
@@ -92,13 +95,66 @@ public class TermDetail extends AppCompatActivity {
         EventBus.getDefault().register(this);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the term_menu; this adds items to the action bar if it is present.
+        this.menu = menu;
+        getMenuInflater().inflate(R.menu.term_menu, menu);
+        enableForm(newTerm);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch(item.getItemId()) {
+            case R.id.term_menu_edit:
+                enableForm(true);
+                break;
+            case R.id.term_menu_save:
+                save();
+                break;
+            case R.id.term_menu_delete:
+                delete();
+                break;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+        return true;
+    }
+
+    private void delete() {
+        // TODO: 6/1/2018 delete confirmation
+
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+
+                db.termDao().delete(selectedTerm);
+            }
+        });
+        Toast.makeText(getApplicationContext(), selectedTerm.getName() + " deleted.",Toast.LENGTH_LONG).show();
+        setResult(RESULT_OK);
+        finish();
+    }
+
+    private void enableForm(boolean enabled) {
+        formEnabled = enabled;
+        menu.getItem(0).setVisible(!enabled);
+        menu.getItem(1).setVisible(enabled);
+        termName.setEnabled(enabled);
+        termStart.setEnabled(enabled);
+        termEnd.setEnabled(enabled);
+    }
+
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void CoursesEventHandler(CoursesEvent event) {
         Log.d(TAG, "CoursesEventHandler: Course Event triggered!");
 
-        courses = event.getCourseList();
+        courses = event.getCourses();
         bindCourseRecycler();
-    }
+}
 
     private void bindCourseRecycler() {
         recyclerView = findViewById(R.id.course_recycler_view);
@@ -123,6 +179,15 @@ public class TermDetail extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 
+        if (formEnabled) {
+            save();
+            return;
+        }
+        super.onBackPressed();
+    }
+
+    private void save() {
+
         // TODO: 5/21/2018 Term Detail Validation
 
         selectedTerm.setName(termName.getText().toString());
@@ -136,7 +201,7 @@ public class TermDetail extends AppCompatActivity {
             }
         });
         Toast.makeText(getApplicationContext(), selectedTerm.getName() + " saved.",Toast.LENGTH_LONG).show();
-        super.onBackPressed();
+        enableForm(false);
     }
 
     @Override

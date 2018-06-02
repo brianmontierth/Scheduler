@@ -14,6 +14,7 @@ import java.util.List;
 class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ViewHolder> {
     
     private List<Course> courses;
+    public static final String POSITION = "POSITION";
     
     public CourseAdapter(List<Course> courses) {
         this.courses = courses;
