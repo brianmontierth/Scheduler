@@ -1,15 +1,18 @@
 package com.wgu.brian.scheduler;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
-import android.view.View;
+import android.view.MenuItem;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.wgu.brian.scheduler.database.AppDatabase;
 import com.wgu.brian.scheduler.database.entities.Assessment;
@@ -22,6 +25,8 @@ import com.wgu.brian.scheduler.events.CourseNotesEvent;
 import com.wgu.brian.scheduler.events.MentorsEvent;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +35,7 @@ import java.util.concurrent.Executors;
 
 public class CourseDetail extends AppCompatActivity {
 
+    private static final String TAG = "CourseDetail";
     List<Assessment> assessments;
     List<Mentor> mentors;
     List<CourseNote> notes;
@@ -60,6 +66,7 @@ public class CourseDetail extends AppCompatActivity {
         setContentView(R.layout.activity_course_detail);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
         try {
             id = getIntent().getExtras().getInt(CourseAdapter.POSITION, -1);
@@ -82,7 +89,7 @@ public class CourseDetail extends AppCompatActivity {
             executor.execute(new Runnable() {
                 @Override
                 public void run() {
-                    Course course = db.courseDao().findById(TermDetail.id);
+                    Course course = db.courseDao().findById(CourseDetail.id);
                     EventBus.getDefault().post(new CourseEvent(course));
                     List<Assessment> tempAssessments = db.assessmentDao().findAllByCourseId(course.getId());
                     List<Mentor> tempMentors = db.mentorDao().findAllByCourseId(course.getId());
@@ -102,6 +109,102 @@ public class CourseDetail extends AppCompatActivity {
         EventBus.getDefault().register(this);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the course_menu; this adds items to the action bar if it is present.
+        this.menu = menu;
+        getMenuInflater().inflate(R.menu.course_menu, menu);
+        enableForm(newCourse);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.course_menu_edit:
+                enableForm(true);
+                break;
+            case R.id.course_menu_save:
+                save();
+                break;
+            case R.id.course_menu_delete:
+                delete();
+                break;
+            case R.id.course_menu_add_assessment:
+                id = selectedCourse.getId();
+                Intent intent = new Intent(CourseDetail.this, AssessmentDetail.class);
+                intent.putExtra(AssessmentAdapter.POSITION, -1);
+                startActivity(intent);
+                break;
+            case R.id.course_menu_add_mentor:
+                // TODO Add Mentor
+                break;
+            case R.id.course_menu_add_note:
+                // TODO Add Note
+                break;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+        return true;
+    }
+
+    private void delete() {
+        // TODO: 6/4/2018 delete confirmation
+
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+
+                db.courseDao().delete(selectedCourse);
+            }
+        });
+        Toast.makeText(getApplicationContext(), selectedCourse.getName() + " deleted.", Toast.LENGTH_LONG).show();
+        setResult(RESULT_OK, new Intent(CourseDetail.this, TermDetail.class));
+        finish();
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        if (formEnabled) {
+            save();
+            return;
+        }
+        super.onBackPressed();
+    }
+
+    private void save() {
+        // TODO: 5/21/2018 Course Detail Validation
+
+        selectedCourse.setName(courseName.getText().toString());
+        selectedCourse.setStart_date(courseStart.getText().toString());
+        selectedCourse.setEnd_date(courseEnd.getText().toString());
+        selectedCourse.setTerm_id(TermDetail.id);
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+
+                db.courseDao().insert(selectedCourse);
+            }
+        });
+        Toast.makeText(getApplicationContext(), selectedCourse.getName() + " saved.", Toast.LENGTH_LONG).show();
+        enableForm(false);
+    }
+
+    private void enableForm(boolean enabled) {
+        formEnabled = enabled;
+        menu.getItem(0).setVisible(!enabled);
+        menu.getItem(1).setVisible(enabled);
+        courseName.setEnabled(enabled);
+        courseStart.setEnabled(enabled);
+        courseEnd.setEnabled(enabled);
+        if (!formEnabled) {
+            InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+        }
+    }
+
     private void bindAssessmentRecycler() {
         assessmentRV = findViewById(R.id.assessment_recycler_view);
         assessmentRV.setLayoutManager(new LinearLayoutManager(this));
@@ -117,6 +220,42 @@ public class CourseDetail extends AppCompatActivity {
 
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void CourseEventHandler(CourseEvent event) {
+        Log.d(TAG, "CourseEventHandler: Course Event triggered!");
+        bindActivity(event);
+    }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void AssessmentsEventHandler(AssessmentsEvent event) {
+        Log.d(TAG, "AssessmentsEventHandler: Assessments Event triggered!");
+        assessments = event.getAssessments();
+        bindAssessmentRecycler();
+    }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void MentorsEventHandler(MentorsEvent event) {
+        Log.d(TAG, "MentorsEventHandler: Mentors Event triggered!");
+        mentors = event.getMentors();
+        bindMentorRecycler();
+    }
+
+    private void bindActivity(CourseEvent event) {
+        selectedCourse = event.getCourse();
+        courseName.setText(selectedCourse.getName());
+        courseStart.setText(selectedCourse.getStart_date());
+        courseEnd.setText(selectedCourse.getEnd_date());
+    }
+
+    @Override
+    protected void onDestroy() {
+        EventBus.getDefault().unregister(this);
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onRestart() {
+        recreate();
+        super.onRestart();
+    }
 }

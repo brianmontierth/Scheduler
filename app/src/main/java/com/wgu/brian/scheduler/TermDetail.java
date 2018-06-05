@@ -1,15 +1,16 @@
 package com.wgu.brian.scheduler;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -54,6 +55,7 @@ public class TermDetail extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_term_detail);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
         try {
             id = getIntent().getExtras().getInt(TermAdapter.POSITION, -1);
@@ -89,7 +91,10 @@ public class TermDetail extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(TermDetail.this, CourseDetail.class));
+                id = selectedTerm.getId();
+                Intent intent = new Intent(TermDetail.this, CourseDetail.class);
+                intent.putExtra(CourseAdapter.POSITION, -1);
+                startActivity(intent);
             }
         });
         EventBus.getDefault().register(this);
@@ -151,10 +156,9 @@ public class TermDetail extends AppCompatActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void CoursesEventHandler(CoursesEvent event) {
         Log.d(TAG, "CoursesEventHandler: Course Event triggered!");
-
         courses = event.getCourses();
         bindCourseRecycler();
-}
+    }
 
     private void bindCourseRecycler() {
         recyclerView = findViewById(R.id.course_recycler_view);
@@ -208,5 +212,11 @@ public class TermDetail extends AppCompatActivity {
     protected void onDestroy() {
         EventBus.getDefault().unregister(this);
         super.onDestroy();
+    }
+
+    @Override
+    protected void onRestart() {
+        recreate();
+        super.onRestart();
     }
 }
