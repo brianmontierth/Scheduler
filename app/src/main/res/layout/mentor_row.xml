@@ -10,8 +10,9 @@
         android:id="@+id/mentor_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:maxWidth="80pt"
         android:text="@string/example_mentor_name"
-        android:textSize="42sp" />
+        android:textSize="20sp" />
 
     <LinearLayout
         android:layout_width="match_parent"

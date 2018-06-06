@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AssessmentDetail">
+    tools:context=".MentorDetail">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -15,43 +16,36 @@
             android:layout_height="wrap_content">
 
             <android.support.design.widget.TextInputEditText
-                android:id="@+id/assessmentDetailName"
+                android:id="@+id/mentorDetailName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/name" />
+                android:hint="@string/name"
+                android:inputType="textPersonName" />
         </android.support.design.widget.TextInputLayout>
-
-        <Spinner
-            android:id="@+id/assessmentDetailType"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <android.support.design.widget.TextInputEditText
-                android:id="@+id/assessmentDetailDue"
+                android:id="@+id/mentorDetailPhone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/due"
-                android:inputType="date" />
+                android:hint="@string/phone"
+                android:inputType="phone" />
         </android.support.design.widget.TextInputLayout>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/notes"
-            android:textSize="18sp"
-            android:textStyle="bold" />
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/assessment_note_recycler_view"
+        <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-        </android.support.v7.widget.RecyclerView>
 
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/mentorDetailEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/email"
+                android:inputType="textEmailAddress" />
+        </android.support.design.widget.TextInputLayout>
 
     </LinearLayout>
 

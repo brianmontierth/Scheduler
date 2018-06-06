@@ -31,6 +31,10 @@ public class Mentor {
         this.email = email;
     }
 
+    public Mentor() {
+
+    }
+
     public int getId() {
         return id;
     }

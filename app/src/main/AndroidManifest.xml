@@ -19,19 +19,24 @@
         <activity
             android:name=".TermListActivity"
             android:label="@string/title_activity_term_list"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".CourseListActivity"
             android:label="@string/title_activity_course_list"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".TermDetail"
-            android:label="@string/title_activity_term_detail"></activity>
+            android:label="@string/title_activity_term_detail" />
         <activity
             android:name=".CourseDetail"
             android:label="@string/title_activity_course_detail"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity android:name=".AssessmentDetail"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".AssessmentDetail"
+            android:label="Assessment Detail"/>
+        <activity
+            android:name=".MentorDetail"
+            android:label="Mentor Detail" />
     </application>
 
 </manifest>

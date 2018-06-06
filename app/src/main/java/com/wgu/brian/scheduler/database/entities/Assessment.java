@@ -8,6 +8,7 @@ import android.arch.persistence.room.PrimaryKey;
 @Entity
 public class Assessment {
 
+    public static final String[] TYPES = {"Select Type","Performance","Objective"};
     @PrimaryKey(autoGenerate = true)
     private int id;
 
@@ -29,6 +30,10 @@ public class Assessment {
         this.type = type;
         this.name = name;
         this.due_date = due_date;
+    }
+
+    public Assessment() {
+
     }
 
     public int getId() {

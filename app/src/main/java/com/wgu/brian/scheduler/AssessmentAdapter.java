@@ -13,7 +13,6 @@ import com.wgu.brian.scheduler.database.entities.Assessment;
 import java.util.List;
 
 class AssessmentAdapter extends RecyclerView.Adapter<AssessmentAdapter.ViewHolder> {
-
     private List<Assessment> assessments;
     public static final String POSITION = "POSITION";
 

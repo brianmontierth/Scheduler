@@ -13,11 +13,11 @@
     <string name="title_activity_course_detail">Course Detail</string>
     <string name="title_activity_term_detail">Term Detail</string>
     <string name="example_mentor_name">John Doe</string>
-    <string name="phone">phone:</string>
-    <string name="email">email:</string>
+    <string name="phone">Phone:</string>
+    <string name="email">Email:</string>
     <string name="exampleAssessment">Assessment 1</string>
-    <string name="type">type:</string>
-    <string name="due">due:</string>
+    <string name="type">Type:</string>
+    <string name="due">Due:</string>
     <string name="exampleNote">This is a note.</string>
     <string name="edit">Edit</string>
     <string name="delete_term">Delete Term</string>

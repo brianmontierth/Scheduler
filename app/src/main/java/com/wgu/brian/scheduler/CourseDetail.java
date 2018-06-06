@@ -133,12 +133,15 @@ public class CourseDetail extends AppCompatActivity {
                 break;
             case R.id.course_menu_add_assessment:
                 id = selectedCourse.getId();
-                Intent intent = new Intent(CourseDetail.this, AssessmentDetail.class);
-                intent.putExtra(AssessmentAdapter.POSITION, -1);
-                startActivity(intent);
+                Intent intentAssessment = new Intent(CourseDetail.this, AssessmentDetail.class);
+                intentAssessment.putExtra(AssessmentAdapter.POSITION, -1);
+                startActivity(intentAssessment);
                 break;
             case R.id.course_menu_add_mentor:
-                // TODO Add Mentor
+                id = selectedCourse.getId();
+                Intent intentMentor = new Intent(CourseDetail.this, MentorDetail.class);
+                intentMentor.putExtra(MentorAdapter.POSITION, -1);
+                startActivity(intentMentor);
                 break;
             case R.id.course_menu_add_note:
                 // TODO Add Note
@@ -217,6 +220,10 @@ public class CourseDetail extends AppCompatActivity {
     }
 
     private void bindMentorRecycler() {
+        mentorRV =  findViewById(R.id.mentor_recycler_view);
+        mentorRV.setLayoutManager(new LinearLayoutManager(this));
+        RecyclerView.Adapter adapter = new MentorAdapter(mentors);
+        mentorRV.setAdapter(adapter);
 
     }
 
