@@ -30,4 +30,8 @@
     <string name="delete_mentor">Delete Mentor</string>
     <string name="delete_note">Delete Note</string>
     <string name="notes">Notes:</string>
+    <string name="note">Note:</string>
+    <string name="status">Status:</string>
+    <string name="share">Share</string>
+    <string name="save">Save</string>
 </resources>

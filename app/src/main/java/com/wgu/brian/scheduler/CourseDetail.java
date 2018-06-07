@@ -47,6 +47,7 @@ public class CourseDetail extends AppCompatActivity {
     private TextView courseName;
     private TextView courseStart;
     private TextView courseEnd;
+    private TextView courseStatus;
 
     private AppDatabase db;
     public static int id;
@@ -81,6 +82,7 @@ public class CourseDetail extends AppCompatActivity {
         courseName = findViewById(R.id.courseDetailName);
         courseStart = findViewById(R.id.courseDetailStart);
         courseEnd = findViewById(R.id.courseDetailEnd);
+        courseStatus = findViewById(R.id.courseDetailStatus);
 
         db = AppDatabase.getInstance(this);
 
@@ -144,7 +146,10 @@ public class CourseDetail extends AppCompatActivity {
                 startActivity(intentMentor);
                 break;
             case R.id.course_menu_add_note:
-                // TODO Add Note
+                id = selectedCourse.getId();
+                Intent intentNote = new Intent(CourseDetail.this, CourseNoteDetail.class);
+                intentNote.putExtra(CourseNoteAdapter.POSITION, -1);
+                startActivity(intentNote);
                 break;
             default:
                 return super.onOptionsItemSelected(item);
@@ -153,8 +158,6 @@ public class CourseDetail extends AppCompatActivity {
     }
 
     private void delete() {
-        // TODO: 6/4/2018 delete confirmation
-
         executor.execute(new Runnable() {
             @Override
             public void run() {
@@ -178,11 +181,11 @@ public class CourseDetail extends AppCompatActivity {
     }
 
     private void save() {
-        // TODO: 5/21/2018 Course Detail Validation
-
         selectedCourse.setName(courseName.getText().toString());
         selectedCourse.setStart_date(courseStart.getText().toString());
         selectedCourse.setEnd_date(courseEnd.getText().toString());
+        selectedCourse.setStatus(courseStatus.getText().toString());
+
         selectedCourse.setTerm_id(TermDetail.id);
         executor.execute(new Runnable() {
             @Override
@@ -202,6 +205,7 @@ public class CourseDetail extends AppCompatActivity {
         courseName.setEnabled(enabled);
         courseStart.setEnabled(enabled);
         courseEnd.setEnabled(enabled);
+        courseStatus.setEnabled(enabled);
         if (!formEnabled) {
             InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
@@ -216,7 +220,10 @@ public class CourseDetail extends AppCompatActivity {
     }
 
     private void bindNoteRecycler() {
-
+        noteRV = findViewById(R.id.course_note_recycler_view);
+        noteRV.setLayoutManager(new LinearLayoutManager(this));
+        RecyclerView.Adapter adapter = new CourseNoteAdapter(notes);
+        noteRV.setAdapter(adapter);
     }
 
     private void bindMentorRecycler() {
@@ -247,11 +254,19 @@ public class CourseDetail extends AppCompatActivity {
         bindMentorRecycler();
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void CourseNotesEventHandler(CourseNotesEvent event) {
+        Log.d(TAG, "CourseNotesEventHandler: Notes Event triggered!");
+        notes = event.getCourseNotes();
+        bindNoteRecycler();
+    }
+
     private void bindActivity(CourseEvent event) {
         selectedCourse = event.getCourse();
         courseName.setText(selectedCourse.getName());
         courseStart.setText(selectedCourse.getStart_date());
         courseEnd.setText(selectedCourse.getEnd_date());
+        courseStatus.setText(selectedCourse.getStatus());
     }
 
     @Override

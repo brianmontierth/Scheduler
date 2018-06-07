@@ -23,6 +23,10 @@ public class AssessmentNote {
         this.note = note;
     }
 
+    public AssessmentNote() {
+
+    }
+
     public int getId() {
         return id;
     }

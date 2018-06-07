@@ -22,6 +22,10 @@ public class CourseNote {
         this.note = note;
     }
 
+    public CourseNote() {
+
+    }
+
     public int getId() {
         return id;
     }

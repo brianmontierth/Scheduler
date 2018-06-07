@@ -129,7 +129,10 @@ public class TermDetail extends AppCompatActivity {
     }
 
     private void delete() {
-        // TODO: 6/1/2018 delete confirmation
+        if (!courses.isEmpty()) {
+            Toast.makeText(getApplicationContext(), " You must delete all courses first.", Toast.LENGTH_LONG).show();
+            return;
+        }
 
         executor.execute(new Runnable() {
             @Override
@@ -191,8 +194,6 @@ public class TermDetail extends AppCompatActivity {
     }
 
     private void save() {
-
-        // TODO: 5/21/2018 Term Detail Validation
 
         selectedTerm.setName(termName.getText().toString());
         selectedTerm.setStart_date(termStart.getText().toString());

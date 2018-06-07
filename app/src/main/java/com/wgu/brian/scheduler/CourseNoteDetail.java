@@ -1,5 +1,6 @@
 package com.wgu.brian.scheduler;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -10,8 +11,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.wgu.brian.scheduler.database.AppDatabase;
-import com.wgu.brian.scheduler.database.entities.Mentor;
-import com.wgu.brian.scheduler.events.MentorEvent;
+import com.wgu.brian.scheduler.database.entities.CourseNote;
+import com.wgu.brian.scheduler.events.CourseNoteEvent;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -20,19 +21,15 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-public class MentorDetail extends AppCompatActivity {
+public class CourseNoteDetail extends AppCompatActivity {
 
-    public static final String TAG = "MentorDetail";
-
-    private TextView mentorName;
-    private TextView mentorPhone;
-    private TextView mentorEmail;
-
-    private AppDatabase db;
+    public static final String TAG = "CourseNoteDetail";
     public static int id;
-    private Mentor selectedMentor = new Mentor();
+    private TextView note;
+    private AppDatabase db;
+    private CourseNote selectedNote = new CourseNote();
 
-    private boolean newMentor = true;
+    private boolean newNote = true;
     private boolean formEnabled = true;
 
     private Menu menu;
@@ -42,28 +39,26 @@ public class MentorDetail extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_mentor_detail);
+        setContentView(R.layout.activity_course_note_detail);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
         try {
-            id = getIntent().getExtras().getInt(MentorAdapter.POSITION, -1);
+            id = getIntent().getExtras().getInt(CourseNoteAdapter.POSITION, -1);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        mentorName = findViewById(R.id.mentorDetailName);
-        mentorPhone = findViewById(R.id.mentorDetailPhone);
-        mentorEmail = findViewById(R.id.mentorDetailEmail);
+        note = findViewById(R.id.courseNoteDetailNote);
 
         db = AppDatabase.getInstance(this);
 
         if (id != -1) {
-            newMentor = false;
+            newNote = false;
             executor.execute(new Runnable() {
                 @Override
                 public void run() {
-                    Mentor mentor = db.mentorDao().findById(MentorDetail.id);
-                    EventBus.getDefault().post(new MentorEvent(mentor));
+                    CourseNote courseNote = db.courseNoteDao().findById(CourseNoteDetail.id);
+                    EventBus.getDefault().post(new CourseNoteEvent(courseNote));
                 }
             });
         }
@@ -73,25 +68,32 @@ public class MentorDetail extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the mentor_menu; this adds items to the action bar if it is present.
+        // Inflate the note_menu; this adds items to the action bar if it is present.
         this.menu = menu;
-        getMenuInflater().inflate(R.menu.mentor_menu, menu);
-        enableForm(newMentor);
+        getMenuInflater().inflate(R.menu.note_menu, menu);
+        enableForm(newNote);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        switch(item.getItemId()) {
-            case R.id.mentor_menu_edit:
+        switch (item.getItemId()) {
+            case R.id.note_menu_edit:
                 enableForm(true);
                 break;
-            case R.id.mentor_menu_save:
+            case R.id.note_menu_save:
                 save();
                 break;
-            case R.id.mentor_menu_delete:
+            case R.id.note_menu_delete:
                 delete();
+                break;
+            case R.id.note_menu_share:
+                Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                shareIntent.setType("text/plain");
+                shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Scheduler Course Note");
+                shareIntent.putExtra(Intent.EXTRA_TEXT, note.getText().toString());
+                startActivity(Intent.createChooser(shareIntent, "Share using..."));
                 break;
             default:
                 return super.onOptionsItemSelected(item);
@@ -104,10 +106,10 @@ public class MentorDetail extends AppCompatActivity {
             @Override
             public void run() {
 
-                db.mentorDao().delete(selectedMentor);
+                db.courseNoteDao().delete(selectedNote);
             }
         });
-        Toast.makeText(getApplicationContext(), selectedMentor.getName() + " deleted.",Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), "Note deleted.", Toast.LENGTH_LONG).show();
         setResult(RESULT_OK);
         finish();
     }
@@ -116,16 +118,12 @@ public class MentorDetail extends AppCompatActivity {
         formEnabled = enabled;
         menu.getItem(0).setVisible(!enabled);
         menu.getItem(1).setVisible(enabled);
-        mentorName.setEnabled(enabled);
-        mentorPhone.setEnabled(enabled);
-        mentorEmail.setEnabled(enabled);
+        note.setEnabled(enabled);
     }
 
-    private void bindActivity(MentorEvent event) {
-        selectedMentor = event.getMentor();
-        mentorName.setText(selectedMentor.getName());
-        mentorPhone.setText(selectedMentor.getPhone());
-        mentorEmail.setText(selectedMentor.getEmail());
+    private void bindActivity(CourseNoteEvent event) {
+        selectedNote = event.getCourseNote();
+        note.setText(selectedNote.getNote());
     }
 
     @Override
@@ -140,18 +138,16 @@ public class MentorDetail extends AppCompatActivity {
 
     private void save() {
 
-        selectedMentor.setName(mentorName.getText().toString());
-        selectedMentor.setPhone(mentorPhone.getText().toString());
-        selectedMentor.setEmail(mentorEmail.getText().toString());
-        selectedMentor.setCourse_id(CourseDetail.id);
+        selectedNote.setNote(note.getText().toString());
+        selectedNote.setCourse_id(CourseDetail.id);
         executor.execute(new Runnable() {
             @Override
             public void run() {
 
-                db.mentorDao().insert(selectedMentor);
+                db.courseNoteDao().insert(selectedNote);
             }
         });
-        Toast.makeText(getApplicationContext(), selectedMentor.getName() + " saved.",Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), "Note saved.", Toast.LENGTH_LONG).show();
         enableForm(false);
     }
 
@@ -168,8 +164,8 @@ public class MentorDetail extends AppCompatActivity {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void MentorEventHandler(MentorEvent event) {
-        Log.d(TAG, "MentorEventHandler: Mentor Event triggered!");
+    public void CourseNoteEventHandler(CourseNoteEvent event) {
+        Log.d(TAG, "CourseNoteEventHandler: Note Event triggered!");
         bindActivity(event);
     }
 }

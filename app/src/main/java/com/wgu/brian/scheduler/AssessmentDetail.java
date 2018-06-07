@@ -1,7 +1,9 @@
 package com.wgu.brian.scheduler;
 
-import android.support.v7.app.AppCompatActivity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
@@ -18,11 +20,13 @@ import com.wgu.brian.scheduler.database.AppDatabase;
 import com.wgu.brian.scheduler.database.entities.Assessment;
 import com.wgu.brian.scheduler.database.entities.AssessmentNote;
 import com.wgu.brian.scheduler.events.AssessmentEvent;
+import com.wgu.brian.scheduler.events.AssessmentNotesEvent;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -78,6 +82,8 @@ public class AssessmentDetail extends AppCompatActivity {
         });
         assessmentDue = findViewById(R.id.assessmentDetailDue);
 
+        notes = new ArrayList<>();
+
         db = AppDatabase.getInstance(this);
 
         if (id != -1) {
@@ -87,6 +93,8 @@ public class AssessmentDetail extends AppCompatActivity {
                 public void run() {
                     Assessment assessment = db.assessmentDao().findById(AssessmentDetail.id);
                     EventBus.getDefault().post(new AssessmentEvent(assessment));
+                    List<AssessmentNote> tempNotes = db.assessmentNoteDao().findAllByAssessmentId(assessment.getId());
+                    EventBus.getDefault().post(new AssessmentNotesEvent(tempNotes));
                 }
             });
         }
@@ -98,7 +106,10 @@ public class AssessmentDetail extends AppCompatActivity {
     }
 
     private void bindNoteRecycler() {
-
+        noteRV = findViewById(R.id.assessment_note_recycler_view);
+        noteRV.setLayoutManager(new LinearLayoutManager(this));
+        RecyclerView.Adapter adapter = new AssessmentNoteAdapter(notes);
+        noteRV.setAdapter(adapter);
     }
 
     @Override
@@ -124,7 +135,10 @@ public class AssessmentDetail extends AppCompatActivity {
                 delete();
                 break;
             case R.id.assessment_menu_add_note:
-                // TODO Add assessment note here
+                id = selectedAssessment.getId();
+                Intent intentNote = new Intent(AssessmentDetail.this, AssessmentNoteDetail.class);
+                intentNote.putExtra(AssessmentNoteAdapter.POSITION, -1);
+                startActivity(intentNote);
                 break;
             default:
                 return super.onOptionsItemSelected(item);
@@ -133,8 +147,6 @@ public class AssessmentDetail extends AppCompatActivity {
     }
 
     private void delete() {
-        // TODO: 6/1/2018 delete confirmation
-
         executor.execute(new Runnable() {
             @Override
             public void run() {
@@ -184,7 +196,10 @@ public class AssessmentDetail extends AppCompatActivity {
 
     private void save() {
 
-        // TODO: 5/21/2018 Assessment Detail Validation
+        if (selectedAssessment.getType().contains("Select Type") || selectedAssessment.getType().isEmpty() || selectedAssessment.getType() == null) {
+            Toast.makeText(getApplicationContext(), "Please select a type.", Toast.LENGTH_LONG).show();
+            return;
+        }
 
         selectedAssessment.setName(assessmentName.getText().toString());
         selectedAssessment.setDue_date(assessmentDue.getText().toString());
@@ -216,5 +231,12 @@ public class AssessmentDetail extends AppCompatActivity {
     public void AssessmentEventHandler(AssessmentEvent event) {
         Log.d(TAG, "AssessmentEventHandler: Assessment Event triggered!");
         bindActivity(event);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void AssessmentNotesEventHandler(AssessmentNotesEvent event) {
+        Log.d(TAG, "AssessmentNotesEventHandler: Notes Event triggered!");
+        notes = event.getAssessmentNotes();
+        bindNoteRecycler();
     }
 }

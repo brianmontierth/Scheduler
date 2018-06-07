@@ -33,10 +33,16 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".AssessmentDetail"
-            android:label="Assessment Detail"/>
+            android:label="Assessment Detail" />
         <activity
             android:name=".MentorDetail"
             android:label="Mentor Detail" />
+        <activity
+            android:name=".AssessmentNoteDetail"
+            android:label="Assessment Note" />
+        <activity
+            android:name=".CourseNoteDetail"
+            android:label="Course Note" />
     </application>
 
 </manifest>
