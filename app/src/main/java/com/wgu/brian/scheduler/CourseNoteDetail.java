@@ -139,7 +139,7 @@ public class CourseNoteDetail extends AppCompatActivity {
     private void save() {
 
         selectedNote.setNote(note.getText().toString());
-        selectedNote.setCourse_id(CourseDetail.id);
+        selectedNote.setCourse_id(getIntent().getExtras().getInt(CourseNoteAdapter.PARENT_ID));
         executor.execute(new Runnable() {
             @Override
             public void run() {

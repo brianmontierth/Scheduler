@@ -12,9 +12,10 @@ import com.wgu.brian.scheduler.database.entities.Assessment;
 
 import java.util.List;
 
-class AssessmentAdapter extends RecyclerView.Adapter<AssessmentAdapter.ViewHolder> {
+public class AssessmentAdapter extends RecyclerView.Adapter<AssessmentAdapter.ViewHolder> {
     private List<Assessment> assessments;
     public static final String POSITION = "POSITION";
+    public static final String PARENT_ID = "PARENT_ID";
 
     public AssessmentAdapter(List<Assessment> assessments) {
         this.assessments = assessments;
@@ -38,6 +39,7 @@ class AssessmentAdapter extends RecyclerView.Adapter<AssessmentAdapter.ViewHolde
             public void onClick(View v) {
                 Intent intent = new Intent(holder.view.getContext(),AssessmentDetail.class);
                 intent.putExtra(POSITION, assessments.get(holder.getAdapterPosition()).getId());
+                intent.putExtra(PARENT_ID, assessments.get(holder.getAdapterPosition()).getCourse_id());
                 holder.view.getContext().startActivity(intent);
 
             }

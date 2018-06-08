@@ -139,7 +139,7 @@ public class AssessmentNoteDetail extends AppCompatActivity {
     private void save() {
 
         selectedNote.setNote(note.getText().toString());
-        selectedNote.setAssessment_id(AssessmentDetail.id);
+        selectedNote.setAssessment_id(getIntent().getExtras().getInt(AssessmentNoteAdapter.PARENT_ID));
         executor.execute(new Runnable() {
             @Override
             public void run() {

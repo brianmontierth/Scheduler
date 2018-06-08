@@ -1,0 +1,22 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="Notifications">
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="@string/notifications_course_start"
+            android:title="Course Start Dates" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="@string/notifications_course_end"
+            android:title="Course End Dates" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="@string/notifications_assessment_due"
+            android:title="Assessment Due Dates" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

@@ -91,9 +91,9 @@ public class TermDetail extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                id = selectedTerm.getId();
                 Intent intent = new Intent(TermDetail.this, CourseDetail.class);
                 intent.putExtra(CourseAdapter.POSITION, -1);
+                intent.putExtra(CourseAdapter.PARENT_ID, selectedTerm.getId());
                 startActivity(intent);
             }
         });

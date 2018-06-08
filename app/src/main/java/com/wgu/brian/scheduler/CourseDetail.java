@@ -92,13 +92,14 @@ public class CourseDetail extends AppCompatActivity {
                 @Override
                 public void run() {
                     Course course = db.courseDao().findById(CourseDetail.id);
-                    EventBus.getDefault().post(new CourseEvent(course));
                     List<Assessment> tempAssessments = db.assessmentDao().findAllByCourseId(course.getId());
                     List<Mentor> tempMentors = db.mentorDao().findAllByCourseId(course.getId());
                     List<CourseNote> tempNotes = db.courseNoteDao().findAllByCourseId(course.getId());
                     EventBus.getDefault().post(new AssessmentsEvent(tempAssessments));
                     EventBus.getDefault().post(new MentorsEvent(tempMentors));
                     EventBus.getDefault().post(new CourseNotesEvent(tempNotes));
+
+                    EventBus.getDefault().post(new CourseEvent(course));
                 }
             });
         }
@@ -134,21 +135,21 @@ public class CourseDetail extends AppCompatActivity {
                 delete();
                 break;
             case R.id.course_menu_add_assessment:
-                id = selectedCourse.getId();
                 Intent intentAssessment = new Intent(CourseDetail.this, AssessmentDetail.class);
                 intentAssessment.putExtra(AssessmentAdapter.POSITION, -1);
+                intentAssessment.putExtra(AssessmentAdapter.PARENT_ID, selectedCourse.getId());
                 startActivity(intentAssessment);
                 break;
             case R.id.course_menu_add_mentor:
-                id = selectedCourse.getId();
                 Intent intentMentor = new Intent(CourseDetail.this, MentorDetail.class);
                 intentMentor.putExtra(MentorAdapter.POSITION, -1);
+                intentMentor.putExtra(MentorAdapter.PARENT_ID, selectedCourse.getId());
                 startActivity(intentMentor);
                 break;
             case R.id.course_menu_add_note:
-                id = selectedCourse.getId();
                 Intent intentNote = new Intent(CourseDetail.this, CourseNoteDetail.class);
                 intentNote.putExtra(CourseNoteAdapter.POSITION, -1);
+                intentNote.putExtra(CourseNoteAdapter.PARENT_ID, selectedCourse.getId());
                 startActivity(intentNote);
                 break;
             default:
@@ -186,7 +187,7 @@ public class CourseDetail extends AppCompatActivity {
         selectedCourse.setEnd_date(courseEnd.getText().toString());
         selectedCourse.setStatus(courseStatus.getText().toString());
 
-        selectedCourse.setTerm_id(TermDetail.id);
+        selectedCourse.setTerm_id(getIntent().getExtras().getInt(CourseAdapter.PARENT_ID, selectedCourse.getTerm_id()));
         executor.execute(new Runnable() {
             @Override
             public void run() {
@@ -210,6 +211,13 @@ public class CourseDetail extends AppCompatActivity {
             InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
         }
+    }
+
+    private void bindActivity(CourseEvent event) {
+        courseName.setText(selectedCourse.getName());
+        courseStart.setText(selectedCourse.getStart_date());
+        courseEnd.setText(selectedCourse.getEnd_date());
+        courseStatus.setText(selectedCourse.getStatus());
     }
 
     private void bindAssessmentRecycler() {
@@ -237,6 +245,7 @@ public class CourseDetail extends AppCompatActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void CourseEventHandler(CourseEvent event) {
         Log.d(TAG, "CourseEventHandler: Course Event triggered!");
+        selectedCourse = event.getCourse();
         bindActivity(event);
     }
 
@@ -259,14 +268,6 @@ public class CourseDetail extends AppCompatActivity {
         Log.d(TAG, "CourseNotesEventHandler: Notes Event triggered!");
         notes = event.getCourseNotes();
         bindNoteRecycler();
-    }
-
-    private void bindActivity(CourseEvent event) {
-        selectedCourse = event.getCourse();
-        courseName.setText(selectedCourse.getName());
-        courseStart.setText(selectedCourse.getStart_date());
-        courseEnd.setText(selectedCourse.getEnd_date());
-        courseStatus.setText(selectedCourse.getStatus());
     }
 
     @Override

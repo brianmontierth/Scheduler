@@ -15,6 +15,7 @@ import java.util.List;
 class MentorAdapter extends RecyclerView.Adapter<MentorAdapter.ViewHolder> {
     private List<Mentor> mentors;
     public static final String POSITION = "POSITION";
+    public static final String PARENT_ID = "PARENT_ID";
 
     public MentorAdapter(List<Mentor> mentors) {
         this.mentors = mentors;
@@ -38,6 +39,7 @@ class MentorAdapter extends RecyclerView.Adapter<MentorAdapter.ViewHolder> {
             public void onClick(View v) {
                 Intent intent = new Intent(holder.view.getContext(),MentorDetail.class);
                 intent.putExtra(POSITION, mentors.get(holder.getAdapterPosition()).getId());
+                intent.putExtra(PARENT_ID, mentors.get(holder.getAdapterPosition()).getCourse_id());
                 holder.view.getContext().startActivity(intent);
 
             }

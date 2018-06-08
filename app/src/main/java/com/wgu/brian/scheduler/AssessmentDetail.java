@@ -135,8 +135,8 @@ public class AssessmentDetail extends AppCompatActivity {
                 delete();
                 break;
             case R.id.assessment_menu_add_note:
-                id = selectedAssessment.getId();
                 Intent intentNote = new Intent(AssessmentDetail.this, AssessmentNoteDetail.class);
+                intentNote.putExtra(AssessmentNoteAdapter.PARENT_ID, selectedAssessment.getId());
                 intentNote.putExtra(AssessmentNoteAdapter.POSITION, -1);
                 startActivity(intentNote);
                 break;
@@ -203,7 +203,7 @@ public class AssessmentDetail extends AppCompatActivity {
 
         selectedAssessment.setName(assessmentName.getText().toString());
         selectedAssessment.setDue_date(assessmentDue.getText().toString());
-        selectedAssessment.setCourse_id(CourseDetail.id);
+        selectedAssessment.setCourse_id(getIntent().getExtras().getInt(AssessmentAdapter.PARENT_ID));
         executor.execute(new Runnable() {
             @Override
             public void run() {

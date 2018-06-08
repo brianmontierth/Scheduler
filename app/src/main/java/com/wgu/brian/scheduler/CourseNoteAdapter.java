@@ -14,6 +14,7 @@ import java.util.List;
 
 class CourseNoteAdapter extends RecyclerView.Adapter<CourseNoteAdapter.ViewHolder> {
     public static final String POSITION = "POSITION";
+    public static final String PARENT_ID = "PARENT_ID";
     private List<CourseNote> courseNoteList;
 
     public CourseNoteAdapter(List<CourseNote> courseNoteList) {
@@ -36,6 +37,7 @@ class CourseNoteAdapter extends RecyclerView.Adapter<CourseNoteAdapter.ViewHolde
             public void onClick(View v) {
                 Intent intent = new Intent(holder.view.getContext(), CourseNoteDetail.class);
                 intent.putExtra(POSITION, courseNoteList.get(holder.getAdapterPosition()).getId());
+                intent.putExtra(PARENT_ID, courseNoteList.get(holder.getAdapterPosition()).getCourse_id());
                 holder.view.getContext().startActivity(intent);
 
             }

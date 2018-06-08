@@ -7,10 +7,10 @@
     tools:context=".MainActivity">
 
     <Button
-        android:id="@+id/courseBtn"
+        android:id="@+id/settingsBtn"
         android:layout_width="350dp"
         android:layout_height="50dp"
-        android:text="Courses"
+        android:text="Settings"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -23,7 +23,7 @@
         android:layout_height="50dp"
         android:onClick="@string/title_activity_term_list"
         android:text="Terms"
-        app:layout_constraintBottom_toTopOf="@+id/courseBtn"
+        app:layout_constraintBottom_toTopOf="@+id/settingsBtn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"

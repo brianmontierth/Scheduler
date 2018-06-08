@@ -30,4 +30,7 @@ public interface AssessmentDao {
 
     @Delete
     void delete(Assessment assessment);
+
+    @Query("SELECT * FROM Assessment WHERE due_date = CURRENT_DATE")
+    List<Assessment> getDueAssessments();
 }

@@ -143,7 +143,7 @@ public class MentorDetail extends AppCompatActivity {
         selectedMentor.setName(mentorName.getText().toString());
         selectedMentor.setPhone(mentorPhone.getText().toString());
         selectedMentor.setEmail(mentorEmail.getText().toString());
-        selectedMentor.setCourse_id(CourseDetail.id);
+        selectedMentor.setCourse_id(getIntent().getExtras().getInt(MentorAdapter.PARENT_ID, selectedMentor.getCourse_id()));
         executor.execute(new Runnable() {
             @Override
             public void run() {
