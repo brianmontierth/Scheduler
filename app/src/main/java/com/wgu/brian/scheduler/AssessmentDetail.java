@@ -92,9 +92,10 @@ public class AssessmentDetail extends AppCompatActivity {
                 @Override
                 public void run() {
                     Assessment assessment = db.assessmentDao().findById(AssessmentDetail.id);
-                    EventBus.getDefault().post(new AssessmentEvent(assessment));
+
                     List<AssessmentNote> tempNotes = db.assessmentNoteDao().findAllByAssessmentId(assessment.getId());
                     EventBus.getDefault().post(new AssessmentNotesEvent(tempNotes));
+                    EventBus.getDefault().post(new AssessmentEvent(assessment));
                 }
             });
         }

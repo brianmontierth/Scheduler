@@ -32,10 +32,4 @@ public interface CourseDao {
 
     @Delete
     void delete(Course course);
-
-    @Query("SELECT * FROM Course WHERE start_date >= DATETIME(:startOfDay) AND start_date <= DATETIME(:endOfDay) ")
-    List<Course> getStartingCourses(String startOfDay, String endOfDay);
-
-    @Query("SELECT * FROM Course WHERE end_date = CURRENT_DATE")
-    List<Course> getEndingCourses();
 }

@@ -57,16 +57,10 @@ public class NotificationService extends IntentService {
 
     private void handleCourseStartNotifications() {
         List<Course> coursesStarting = db.courseDao().getAllCourses();
-        Log.i(TAG, "handleCourseStartNotifications: Course Notify triggered: " + coursesStarting.isEmpty());
         if (!(coursesStarting == null) && !coursesStarting.isEmpty()) {
-            Log.i(TAG, "handleCourseStartNotifications: Size: " + coursesStarting.size());
             for (Course course :
                     coursesStarting) {
-                //TODO figure out date problems
-                if (!LocalDate.parse(course.getStart_date(), DateTimeFormatter.ofPattern("MM/dd/yyyy", Locale.getDefault())).equals(LocalDate.now(ZoneId.systemDefault()))) {
-                    Log.i(TAG, "handleCourseStartNotifications: " + LocalDate.parse(course.getStart_date(), DateTimeFormatter.ofPattern("MM/dd/yyyy", Locale.getDefault())).equals(LocalDate.now(ZoneId.systemDefault())));
-                    Log.i(TAG, "handleCourseStartNotifications: " + LocalDate.parse(course.getStart_date(), DateTimeFormatter.ofPattern("MM/dd/yyyy", Locale.getDefault())));
-                    Log.i(TAG, "handleCourseStartNotifications: " + ZonedDateTime.now(ZoneId.systemDefault()).toLocalDate());
+                if (!LocalDate.parse(course.getStart_date(), DateTimeFormatter.ofPattern("MM/dd/yyyy", Locale.getDefault())).equals(LocalDate.now())) {
                     continue;
                 }
 
@@ -79,10 +73,14 @@ public class NotificationService extends IntentService {
     }
 
     private void handleCourseEndNotifications() {
-        List<Course> coursesEnding = db.courseDao().getEndingCourses();
+        List<Course> coursesEnding = db.courseDao().getAllCourses();
         if (!(coursesEnding == null) && !coursesEnding.isEmpty()) {
             for (Course course :
                     coursesEnding) {
+                if (!LocalDate.parse(course.getEnd_date(), DateTimeFormatter.ofPattern("MM/dd/yyyy", Locale.getDefault())).equals(LocalDate.now())) {
+                    continue;
+                }
+
                 Intent intent = new Intent(this, CourseDetail.class);
                 intent.putExtra(CourseAdapter.POSITION, course.getId());
                 intent.putExtra(CourseAdapter.PARENT_ID, course.getTerm_id());
@@ -92,10 +90,14 @@ public class NotificationService extends IntentService {
     }
 
     private void handleAssessmentDueNotifications() {
-        List<Assessment> assessments = db.assessmentDao().getDueAssessments();
+        List<Assessment> assessments = db.assessmentDao().getAllAssessments();
         if (!(assessments == null) && !assessments.isEmpty()) {
             for (Assessment assessment :
                     assessments) {
+                if (!LocalDate.parse(assessment.getDue_date(), DateTimeFormatter.ofPattern("MM/dd/yyyy", Locale.getDefault())).equals(LocalDate.now())) {
+                    continue;
+                }
+
                 Intent intent = new Intent(this, AssessmentDetail.class);
                 intent.putExtra(AssessmentAdapter.POSITION, assessment.getId());
                 intent.putExtra(AssessmentAdapter.PARENT_ID, assessment.getCourse_id());

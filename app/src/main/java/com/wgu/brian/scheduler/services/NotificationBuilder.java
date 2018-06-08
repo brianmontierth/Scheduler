@@ -11,6 +11,8 @@ import android.support.v4.app.NotificationCompat;
 
 import com.wgu.brian.scheduler.R;
 
+import java.util.Random;
+
 
 public class NotificationBuilder {
 
@@ -64,8 +66,10 @@ public class NotificationBuilder {
             nm.createNotificationChannel(mChannel);
         }
 
+        Random random = new Random();
+        int m = random.nextInt(9999 - 1000) + 1000;
 
-        nm.notify(NOTIFICATION_TAG.hashCode(), notification);
+        nm.notify(m, notification);
 
     }
 }
