@@ -26,6 +26,8 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -51,7 +53,7 @@ public class AssessmentDetail extends AppCompatActivity {
 
     private Menu menu;
 
-    private Executor executor = Executors.newCachedThreadPool();
+    private Executor executor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,8 +88,10 @@ public class AssessmentDetail extends AppCompatActivity {
 
         db = AppDatabase.getInstance(this);
 
+        EventBus.getDefault().register(this);
         if (id != -1) {
             newAssessment = false;
+            executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
             executor.execute(new Runnable() {
                 @Override
                 public void run() {
@@ -103,7 +107,7 @@ public class AssessmentDetail extends AppCompatActivity {
             bindNoteRecycler();
         }
 
-        EventBus.getDefault().register(this);
+        Thread.yield();
     }
 
     private void bindNoteRecycler() {
@@ -188,6 +192,12 @@ public class AssessmentDetail extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 
+        if (selectedAssessment.getName() == null && selectedAssessment.getDue_date() == null) {
+            super.onBackPressed();
+            return;
+        }
+
+
         if (formEnabled) {
             save();
             return;
@@ -197,8 +207,14 @@ public class AssessmentDetail extends AppCompatActivity {
 
     private void save() {
 
+
         if (selectedAssessment.getType().contains("Select Type") || selectedAssessment.getType().isEmpty() || selectedAssessment.getType() == null) {
             Toast.makeText(getApplicationContext(), "Please select a type.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        if (!isValidDate(assessmentDue.getText().toString())) {
+            Toast.makeText(getApplicationContext(), "Dates must be in format: MM/dd/yyyy", Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -214,6 +230,15 @@ public class AssessmentDetail extends AppCompatActivity {
         });
         Toast.makeText(getApplicationContext(), selectedAssessment.getName() + " saved.",Toast.LENGTH_LONG).show();
         enableForm(false);
+    }
+
+    private boolean isValidDate(String date) {
+        try {
+            LocalDate.parse(date, DateTimeFormatter.ofPattern("MM/dd/yyyy"));
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     @Override

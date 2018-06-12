@@ -4,7 +4,6 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
 import com.wgu.brian.scheduler.AssessmentAdapter;
 import com.wgu.brian.scheduler.AssessmentDetail;
@@ -16,8 +15,6 @@ import com.wgu.brian.scheduler.database.entities.Assessment;
 import com.wgu.brian.scheduler.database.entities.Course;
 
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
@@ -92,8 +89,7 @@ public class NotificationService extends IntentService {
     private void handleAssessmentDueNotifications() {
         List<Assessment> assessments = db.assessmentDao().getAllAssessments();
         if (!(assessments == null) && !assessments.isEmpty()) {
-            for (Assessment assessment :
-                    assessments) {
+            for (Assessment assessment : assessments) {
                 if (!LocalDate.parse(assessment.getDue_date(), DateTimeFormatter.ofPattern("MM/dd/yyyy", Locale.getDefault())).equals(LocalDate.now())) {
                     continue;
                 }

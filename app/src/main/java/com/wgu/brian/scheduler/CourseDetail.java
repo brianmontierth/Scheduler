@@ -28,6 +28,8 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -58,7 +60,7 @@ public class CourseDetail extends AppCompatActivity {
 
     private Menu menu;
 
-    private Executor executor = Executors.newCachedThreadPool();
+    private Executor executor;
 
 
     @Override
@@ -86,8 +88,11 @@ public class CourseDetail extends AppCompatActivity {
 
         db = AppDatabase.getInstance(this);
 
+        EventBus.getDefault().register(this);
+
         if (id != -1) {
             newCourse = false;
+            executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
             executor.execute(new Runnable() {
                 @Override
                 public void run() {
@@ -109,7 +114,7 @@ public class CourseDetail extends AppCompatActivity {
             bindNoteRecycler();
         }
 
-        EventBus.getDefault().register(this);
+        Thread.yield();
     }
 
     @Override
@@ -163,6 +168,10 @@ public class CourseDetail extends AppCompatActivity {
             @Override
             public void run() {
 
+                for (Assessment assessment : assessments) {
+                    db.assessmentDao().delete(assessment);
+                }
+
                 db.courseDao().delete(selectedCourse);
             }
         });
@@ -174,6 +183,11 @@ public class CourseDetail extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 
+        if (selectedCourse.getName() == null && selectedCourse.getStart_date() == null) {
+            super.onBackPressed();
+            return;
+        }
+
         if (formEnabled) {
             save();
             return;
@@ -182,6 +196,12 @@ public class CourseDetail extends AppCompatActivity {
     }
 
     private void save() {
+
+        if (!isValidDate(courseStart.getText().toString()) || !isValidDate(courseEnd.getText().toString())) {
+            Toast.makeText(getApplicationContext(), "Dates must be in format: MM/dd/yyyy", Toast.LENGTH_LONG).show();
+            return;
+        }
+
         selectedCourse.setName(courseName.getText().toString());
         selectedCourse.setStart_date(courseStart.getText().toString());
         selectedCourse.setEnd_date(courseEnd.getText().toString());
@@ -197,6 +217,15 @@ public class CourseDetail extends AppCompatActivity {
         });
         Toast.makeText(getApplicationContext(), selectedCourse.getName() + " saved.", Toast.LENGTH_LONG).show();
         enableForm(false);
+    }
+
+    private boolean isValidDate(String date) {
+        try {
+            LocalDate.parse(date, DateTimeFormatter.ofPattern("MM/dd/yyyy"));
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     private void enableForm(boolean enabled) {
